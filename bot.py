@@ -9,6 +9,9 @@ from pyrogram.raw.all import layer
 from config import Config
 from config import LOGGER
 from user import User
+from aiohttp import web
+from os import environ 
+from plugins.koyeb import web_server 
 
 
 
@@ -37,6 +40,11 @@ class Bot(Client):
         self.bot_info = usr_bot_me
         self.set_parse_mode("html")
         self.USER, self.USER_ID = await User().start()
+        app = web.AppRunner(await web_server())
+        await app.setup()
+        bind_address = "0.0.0.0"
+        await web.TCPSite(app, bind_address, 8080).start()
+
 
     async def stop(self, *args):
         usr_bot_me = await self.get_me()
